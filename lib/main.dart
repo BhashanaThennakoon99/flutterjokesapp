@@ -5,32 +5,43 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const JokeApp());
+  runApp(const FriendJokeApp());
 }
 
-class JokeApp extends StatelessWidget {
-  const JokeApp({Key? key}) : super(key: key);
+class FriendJokeApp extends StatelessWidget {
+  const FriendJokeApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Joke App',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const JokeScreen(),
+      title: 'Joke App - Friend',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        textTheme: GoogleFonts.robotoTextTheme(),
+      ),
+      home: const FriendJokeScreen(),
     );
   }
 }
 
-class JokeScreen extends StatefulWidget {
-  const JokeScreen({Key? key}) : super(key: key);
+class FriendJokeScreen extends StatefulWidget {
+  const FriendJokeScreen({Key? key}) : super(key: key);
 
   @override
-  _JokeScreenState createState() => _JokeScreenState();
+  _FriendJokeScreenState createState() => _FriendJokeScreenState();
 }
 
-class _JokeScreenState extends State<JokeScreen> {
+class _FriendJokeScreenState extends State<FriendJokeScreen> {
   List<String> jokes = [];
   bool isLoading = true;
+
+  final List<Color> cardColors = [
+    Colors.orange.shade100,
+    Colors.blue.shade100,
+    Colors.green.shade100,
+    Colors.pink.shade100,
+    Colors.yellow.shade100,
+  ];
 
   @override
   void initState() {
@@ -73,47 +84,60 @@ class _JokeScreenState extends State<JokeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Joke App - Friend'),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orange, Colors.pink],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+            colors: [Colors.green, Colors.lightGreenAccent],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 20),
             Text(
-              'Hi Buddy!',
-              style: GoogleFonts.pacifico(
-                fontSize: 36,
+              "Hey! Let's have a fun",
+              style: GoogleFonts.roboto(
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.yellow,
-                shadows: [
-                  Shadow(
-                    blurRadius: 10.0,
-                    color: Colors.black45,
-                    offset: Offset(2.0, 2.0),
-                  ),
-                ],
+                color: Colors.black,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
-              'Welcome to Joke App',
-              style: GoogleFonts.lato(
-                fontSize: 24,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                shadows: [
-                  Shadow(
-                    blurRadius: 5.0,
-                    color: Colors.black26,
-                    offset: Offset(1.0, 1.0),
-                  ),
-                ],
+              "Click the REFRESH button to see jokes",
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                color: Colors.deepPurple,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  isLoading = true;
+                });
+                fetchJokes();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 8,
+              ),
+              child: const Text(
+                'Refresh',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -128,67 +152,26 @@ class _JokeScreenState extends State<JokeScreen> {
                 itemCount: jokes.length,
                 itemBuilder: (context, index) {
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    elevation: 5,
+                    color: cardColors[index % cardColors.length],
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 15),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.lightBlueAccent, Colors.blueAccent],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      padding: const EdgeInsets.all(15.0),
+                    shadowColor: Colors.black,
+                    elevation: 6,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
                       child: Text(
                         jokes[index],
                         style: const TextStyle(
-                          fontSize: 18,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: Colors.black,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   );
                 },
-              ),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isLoading = true;
-                });
-                fetchJokes();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                shadowColor: Colors.black,
-                elevation: 10,
-              ),
-              child: const Text(
-                'Refresh Jokes',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Have a good day...!',
-              style: GoogleFonts.robotoMono(
-                fontSize: 28,  // Increased font size
-                fontWeight: FontWeight.w400,
-                color: Colors.black,  // Set text color to black
               ),
             ),
             const SizedBox(height: 20),
